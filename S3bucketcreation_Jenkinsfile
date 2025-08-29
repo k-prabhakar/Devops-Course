@@ -5,7 +5,7 @@ pipeline {
         AWS_DEFAULT_REGION = 'us-east-1'  // Change as needed
         BUCKET_NAME = 'my-unique-bucket-name-jenkins-demo' // Must be globally unique
     }
-
+ stages {
            stage('Create S3 Bucket') {
             steps {
                 withCredentials([[
