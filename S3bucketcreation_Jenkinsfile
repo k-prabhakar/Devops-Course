@@ -16,7 +16,8 @@ pipeline {
                 ]]) {
                     sh '''
                         echo "Creating S3 bucket: $BUCKET_NAME in $AWS_DEFAULT_REGION"
-                        aws s3api create-bucket --bucket $BUCKET_NAME --region $AWS_DEFAULT_REGION --create-bucket-configuration LocationConstraint=$AWS_DEFAULT_REGION
+                       // aws s3api create-bucket --bucket $BUCKET_NAME --region $AWS_DEFAULT_REGION --create-bucket-configuration LocationConstraint=$AWS_DEFAULT_REGION
+                        aws s3api create-bucket --bucket my-unique-bucket-name-jenkins-demo --region us-east-1
                     '''
                 }
             }
