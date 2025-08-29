@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_DEFAULT_REGION = 'us-east-1'  // Change as needed
+        BUCKET_NAME = 'my-unique-bucket-name-jenkins-demo' // Must be globally unique
+    }
+
+    stages {
+        stage('Install AWS CLI') {
+            steps {
+                sh 'which aws || curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install'
+            }
+        }
+
+        stage('Create S3 Bucket') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-credentials-id', // Jenkins AWS credentials ID
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    sh '''
+                        echo "Creating S3 bucket: $BUCKET_NAME in $AWS_DEFAULT_REGION"
+                        aws s3api create-bucket --bucket $BUCKET_NAME --region $AWS_DEFAULT_REGION --create-bucket-configuration LocationConstraint=$AWS_DEFAULT_REGION
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Bucket $BUCKET_NAME created successfully."
+        }
+        failure {
+            echo "Failed to create S3 bucket."
+        }
+    }
+}
